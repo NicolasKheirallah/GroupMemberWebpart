@@ -308,6 +308,11 @@ $font-stack: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica
   @include circle-base(40px);
   object-fit: cover;
   border: 1px solid $sp-neutralLight;
+  @include transition-ease(opacity);
+
+  &:hover {
+    opacity: 0.8;
+  }
 }
 
 .defaultCoin {
@@ -322,6 +327,22 @@ $font-stack: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  @include transition-ease(all);
+
+  &:hover {
+    background-color: $sp-themeDark;
+    transform: scale(1.05);
+  }
+}
+
+// Loading animation for profile images
+@keyframes pulse {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0.8;
+  }
 }
 
 // Global Styles for SharePoint components

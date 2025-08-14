@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import {
   Persona,
   PersonaSize,
@@ -16,14 +16,15 @@ import {
   ProgressIndicator,
   MessageBar,
   MessageBarType,
-  Link,
   FocusZone,
   List
 } from '@fluentui/react';
 import { LivePersona } from "@pnp/spfx-controls-react/lib/LivePersona";
-import { IGroupMembersProps, IGroup, IUser, IUsersByRole, ICurrentPages, UserPersonaProps } from '../types/interfaces';
+import { IUser, IUsersByRole, ICurrentPages, UserPersonaProps } from '../types/interfaces';
+import { IGroupMembersProps } from './IGroupMembersProps';
+import { GraphService } from '../services/GraphService';
 import styles from './GroupMembers.module.scss';
-import GraphProfileImage from './GraphProfileImage';
+import ProfileImage from './ProfileImage';
 
 
 const getFallbackInitials = (displayName: string): string => {
@@ -36,7 +37,11 @@ const getFallbackInitials = (displayName: string): string => {
   return `${firstLetter}${lastLetter}`;
 };
 
-const UserPersona: React.FC<UserPersonaProps> = ({ user, context }) => {
+interface UserPersonaWithServiceProps extends UserPersonaProps {
+  graphService: GraphService;
+}
+
+const UserPersona: React.FC<UserPersonaWithServiceProps> = React.memo(({ user, graphService }) => {
   const fallbackInitials = getFallbackInitials(user.displayName);
 
   return (
@@ -49,9 +54,9 @@ const UserPersona: React.FC<UserPersonaProps> = ({ user, context }) => {
       initialsColor={PersonaInitialsColor.blue}
       imageInitials={fallbackInitials}
       onRenderPersonaCoin={() => (
-        <GraphProfileImage
+        <ProfileImage
           userId={user.id}
-          context={context}
+          graphService={graphService}
           fallbackInitials={fallbackInitials}
           alt={user.displayName}
           className={styles.profileImage}
@@ -59,7 +64,7 @@ const UserPersona: React.FC<UserPersonaProps> = ({ user, context }) => {
       )}
     />
   );
-};
+});
 
 const GroupMembers: React.FC<IGroupMembersProps> = (props): JSX.Element => {
   const [usersByRole, setUsersByRole] = useState<IUsersByRole>({
@@ -82,6 +87,9 @@ const GroupMembers: React.FC<IGroupMembersProps> = (props): JSX.Element => {
   });
   const searchTimeoutRef = useRef<number | null>(null);
 
+  // Initialize GraphService
+  const graphService = useMemo(() => new GraphService(props.context), [props.context]);
+
   const itemsPerPage: number = props.itemsPerPage || 10;
   const sortField: string = props.sortField || 'name';
 
@@ -99,45 +107,36 @@ const GroupMembers: React.FC<IGroupMembersProps> = (props): JSX.Element => {
     setLoading(true);
     setError("");
     try {
-      const client = await props.context.msGraphClientFactory.getClient('3');
-      const userGroups = await client.api('/me/memberOf').get();
-      const groups = userGroups.value.filter(
-        (group: IGroup) => group['@odata.type'] === '#microsoft.graph.group'
-      );
+      const groups = await graphService.getUserGroups();
       const newUsersByRole: IUsersByRole = {
         admin: [],
         member: [],
         visitor: []
       };
+
+      // Fetch users for each group and role
+      const fetchPromises: Promise<void>[] = [];
+
       for (const group of groups) {
         for (const role of props.roles) {
-          const cacheKey = `groupUsers_${role}_${group.id}`;
-          const cachedData = sessionStorage.getItem(cacheKey);
-          if (cachedData) {
-            newUsersByRole[role as keyof IUsersByRole].push(...JSON.parse(cachedData));
-            continue;
-          }
-          const endpoints: Record<string, string | null> = {
-            admin: `/groups/${group.id}/owners`,
-            member: `/groups/${group.id}/members`,
-            visitor: null
-          };
-          const endpoint = endpoints[role];
-          if (!endpoint) continue;
-          try {
-            const response = await client
-              .api(endpoint)
-              .select('id,displayName,jobTitle,mail,userPrincipalName,department,officeLocation')
-              .get();
-            if (response?.value) {
-              newUsersByRole[role as keyof IUsersByRole].push(...response.value);
-              sessionStorage.setItem(cacheKey, JSON.stringify(response.value));
+          if (role === 'visitor') continue; // Skip visitor as it's not a real Graph role
+          
+          const promise = (async () => {
+            try {
+              const users = await graphService.getGroupMembers(group.id, role as 'admin' | 'member');
+              newUsersByRole[role as keyof IUsersByRole].push(...users);
+            } catch (roleError) {
+              console.warn(`Error fetching ${role}s for group ${group.id}:`, roleError);
             }
-          } catch (roleError) {
-            console.warn(`Error fetching ${role}s:`, roleError);
-          }
+          })();
+          
+          fetchPromises.push(promise);
         }
       }
+
+      // Wait for all requests to complete
+      await Promise.all(fetchPromises);
+
       // Remove duplicate users within each role
       Object.keys(newUsersByRole).forEach((role) => {
         const typedRole = role as keyof IUsersByRole;
@@ -145,6 +144,7 @@ const GroupMembers: React.FC<IGroupMembersProps> = (props): JSX.Element => {
           ...new Map(newUsersByRole[typedRole].map((user: IUser) => [user.id, user])).values()
         ];
       });
+
       // Remove duplicates across roles (priority: admin > member > visitor)
       const processedUserIds = new Set<string>();
       const rolePriority: Array<keyof IUsersByRole> = ['admin', 'member', 'visitor'];
@@ -153,6 +153,7 @@ const GroupMembers: React.FC<IGroupMembersProps> = (props): JSX.Element => {
         newUsersByRole[role] = uniqueUsers;
         uniqueUsers.forEach(user => processedUserIds.add(user.id));
       });
+
       setUsersByRole(newUsersByRole);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Error retrieving group users.";
@@ -161,7 +162,7 @@ const GroupMembers: React.FC<IGroupMembersProps> = (props): JSX.Element => {
     } finally {
       setLoading(false);
     }
-  }, [props.context, props.roles]);
+  }, [graphService, props.roles]);
 
   const filterAndSortUsers = useCallback((): void => {
     const newFilteredUsers: IUsersByRole = {
@@ -247,7 +248,8 @@ const GroupMembers: React.FC<IGroupMembersProps> = (props): JSX.Element => {
                         <UserPersona
                           user={user}
                           context={props.context}
-                          />
+                          graphService={graphService}
+                        />
                       }
                     />
                     <div className={styles.listActions}>
@@ -347,10 +349,28 @@ const GroupMembers: React.FC<IGroupMembersProps> = (props): JSX.Element => {
           messageBarType={MessageBarType.error}
           isMultiline={true}
           dismissButtonAriaLabel="Close"
+          onDismiss={() => setError('')}
           className={styles.errorMessage}
+          actions={
+            <div>
+              <DefaultButton
+                onClick={() => {
+                  setError('');
+                  fetchGroupUsers().catch(console.error);
+                }}
+                text="Retry"
+                iconProps={{ iconName: 'Refresh' }}
+              />
+            </div>
+          }
         >
+          <strong>Failed to load group members</strong>
+          <br />
           {error}
-          <Link onClick={() => fetchGroupUsers()}>Retry</Link>
+          <br />
+          <small>
+            Please check your permissions and network connection. If the problem persists, contact your administrator.
+          </small>
         </MessageBar>
       )}
       {!loading && !error && (

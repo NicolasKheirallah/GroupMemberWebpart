@@ -11,7 +11,7 @@ import {
 import { BaseClientSideWebPart } from '@microsoft/sp-webpart-base';
 
 import GroupMembers from './components/GroupMembers';
-import { IGroupMembersProps } from './types/interfaces';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { IGroupMembersWebPartProps } from './types/webPartProps';
 
 export default class GroupMembersWebPart extends BaseClientSideWebPart<IGroupMembersWebPartProps> {
@@ -34,7 +34,7 @@ export default class GroupMembersWebPart extends BaseClientSideWebPart<IGroupMem
       this.properties.showVisitors && 'visitor'
     ].filter(Boolean) as string[];
   
-    const element: React.ReactElement<IGroupMembersProps> = React.createElement(
+    const groupMembersElement = React.createElement(
       GroupMembers,
       {
         context: this.context,
@@ -43,10 +43,16 @@ export default class GroupMembersWebPart extends BaseClientSideWebPart<IGroupMem
         sortField: this.properties.sortField || 'name',
         showPresenceIndicator: this.properties.showPresenceIndicator,
         showSearchBox: this.properties.showSearchBox,
-        adminLabel: this.properties.adminLabel,
-        memberLabel: this.properties.memberLabel,
-        visitorLabel: this.properties.visitorLabel
+        adminLabel: this.properties.adminLabel || 'Administrators',
+        memberLabel: this.properties.memberLabel || 'Members', 
+        visitorLabel: this.properties.visitorLabel || 'Visitors'
       }
+    );
+
+    const element = React.createElement(
+      ErrorBoundary,
+      null,
+      groupMembersElement
     );
   
     ReactDom.render(element, this.domElement);

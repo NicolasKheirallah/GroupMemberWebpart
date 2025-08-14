@@ -1,16 +1,20 @@
-# Group Members Web Part – Microsoft 365 Group User Management
+# Group Members Web Part
 
-## Summary
+A modern SharePoint Framework web part for displaying and managing Microsoft 365 group members with advanced features and responsive design.
 
-This SharePoint Framework web part provides a comprehensive solution for displaying group members from Microsoft 365 groups. The web part leverages Microsoft Graph to retrieve and display user information with advanced features like:
+## Overview
 
-- Dynamic role-based user filtering (Administrators, Members, Visitors)
-- Intelligent profile photo handling
-- Searchable user list
-- Pagination and load more functionality
-- Quick action buttons for chat and email
+This web part provides a comprehensive solution for viewing and interacting with Microsoft 365 group members. Built with modern React patterns and Microsoft Graph integration, it offers a rich user experience with intelligent caching, error handling, and accessibility features.
 
-![Group Members UI](./assets/GroupMembersUI.png)
+### Key Features
+
+- **Microsoft Graph Integration**: Real-time data from Microsoft 365 groups
+- **Smart Profile Images**: Automated fallback with initials, intelligent caching
+- **Advanced Search**: Debounced search across multiple user properties
+- **Role-based Filtering**: Administrators, Members, and Visitors
+- **Interactive Actions**: Direct Teams chat and email integration
+- **Responsive Design**: Optimized for desktop and mobile experiences
+- **Accessibility**: Full screen reader and keyboard navigation support
 
 ## Features
 
@@ -43,10 +47,10 @@ This SharePoint Framework web part provides a comprehensive solution for display
 
 ## Compatibility
 
-![SPFx 1.20.2](https://img.shields.io/badge/SPFx-1.20.2-green.svg)  
-![Node.js v18](https://img.shields.io/badge/Node.js-v18-green.svg)  
+![SPFx 1.21.1](https://img.shields.io/badge/SPFx-1.21.1-green.svg)  
+![Node.js v18-22](https://img.shields.io/badge/Node.js-v18--22-green.svg)  
 ![SharePoint Online](https://img.shields.io/badge/SharePoint%20Online-Compatible-green.svg)  
-![Hosted Workbench](https://img.shields.io/badge/Hosted%20Workbench-Compatible-green.svg)
+![Teams](https://img.shields.io/badge/Microsoft%20Teams-Compatible-green.svg)
 
 ## Prerequisites
 
@@ -133,8 +137,26 @@ THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS OR IM
 - [SharePoint Framework Documentation](https://docs.microsoft.com/sharepoint/dev/spfx/sharepoint-framework-overview)
 - [Microsoft Graph Documentation](https://docs.microsoft.com/graph/overview)
 
+## Architecture
+
+### Key Components
+
+- **GraphService**: Centralized Microsoft Graph API client with intelligent caching
+- **ProfileImage**: Optimized image component with fallback handling
+- **ErrorBoundary**: Robust error handling and recovery
+- **LivePersona**: Enhanced user persona with presence integration
+
+### Performance Features
+
+- **Intelligent Caching**: Session-based caching with TTL
+- **Lazy Loading**: Images load on demand
+- **Debounced Search**: 300ms debounce for optimal performance
+- **Error Recovery**: Automatic retry mechanisms
+- **Memory Management**: Proper cleanup and leak prevention
+
 ## Version History
 
 | Version | Date | Comments |
 |---------|------|----------|
+| 2.0.0 | February 2025 | Major refactor with GraphService, improved caching, LivePersona integration |
 | 1.0.0 | February 2025 | Initial release |

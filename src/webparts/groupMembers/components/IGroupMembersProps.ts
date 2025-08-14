@@ -2,8 +2,12 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 export interface IGroupMembersProps {
   context: WebPartContext;
-  roles: string[]; 
+  roles: string[];
   itemsPerPage?: number;
   sortField?: string;
-  themeColor?: string;
+  showPresenceIndicator?: boolean;
+  showSearchBox?: boolean;
+  adminLabel: string;
+  memberLabel: string;
+  visitorLabel: string;
 }

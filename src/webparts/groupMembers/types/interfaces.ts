@@ -5,17 +5,6 @@ export interface UserPersonaProps {
   context: WebPartContext;
 }
 
-export interface IGroupMembersProps {
-  context: WebPartContext;
-  roles: string[];
-  itemsPerPage?: number;
-  sortField?: string;
-  showPresenceIndicator?: boolean;
-  showSearchBox?: boolean;
-  adminLabel: string;
-  memberLabel: string;
-  visitorLabel: string;
-}
 
 export interface IGroup {
   id: string;
