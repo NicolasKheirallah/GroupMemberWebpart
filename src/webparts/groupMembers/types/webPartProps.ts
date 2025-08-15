@@ -1,4 +1,6 @@
 export interface IGroupMembersWebPartProps {
+  title: string;
+  showOwners: boolean;
   showAdmins: boolean;
   showMembers: boolean;
   showVisitors: boolean;
@@ -6,6 +8,7 @@ export interface IGroupMembersWebPartProps {
   sortField: string;
   showSearchBox: boolean;
   showPresenceIndicator: boolean;
+  ownerLabel: string;
   adminLabel: string;
   memberLabel: string;
   visitorLabel: string;

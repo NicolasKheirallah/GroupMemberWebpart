@@ -7,7 +7,8 @@ export interface IGroupMembersProps {
   sortField?: string;
   showPresenceIndicator?: boolean;
   showSearchBox?: boolean;
-  adminLabel: string;
-  memberLabel: string;
-  visitorLabel: string;
+  ownerLabel?: string;
+  adminLabel?: string;
+  memberLabel?: string;
+  visitorLabel?: string;
 }

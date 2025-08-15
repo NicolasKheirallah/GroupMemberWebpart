@@ -303,6 +303,16 @@ $font-stack: 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica
   }
 }
 
+// Error boundary styles
+.errorBoundary {
+  margin: 16px 0;
+
+  .errorMessage {
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+}
+
 // Profile image and default coin styles
 .profileImage {
   @include circle-base(40px);

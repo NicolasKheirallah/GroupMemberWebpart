@@ -18,11 +18,19 @@
   "preconfiguredEntries": [{
     "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Advanced
     "group": { "default": "Advanced" },
-    "title": { "default": "GroupMembers" },
-    "description": { "default": "GroupMembers description" },
-    "officeFabricIconFontName": "Page",
+    "title": { "default": "Site Members" },
+    "description": { "default": "Display and manage site members from M365 Groups and SharePoint sites with customizable access levels" },
+    "officeFabricIconFontName": "People",
     "properties": {
-      "description": "GroupMembers"
+      "title": "Site Members",
+      "showOwners": true,
+      "showAdmins": true,
+      "showMembers": true,
+      "showVisitors": false,
+      "showSearchBox": true,
+      "showPresenceIndicator": true,
+      "itemsPerPage": 10,
+      "sortField": "name"
     }
   }]
 }

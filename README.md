@@ -1,46 +1,56 @@
 # Group Members Web Part
 
-A modern SharePoint Framework web part for displaying and managing Microsoft 365 group members with advanced features and responsive design.
+A modern SharePoint Framework web part for displaying and managing site members from both Microsoft 365 groups and SharePoint Communication sites with advanced features and responsive design.
 
 ## Overview
 
-This web part provides a comprehensive solution for viewing and interacting with Microsoft 365 group members. Built with modern React patterns and Microsoft Graph integration, it offers a rich user experience with intelligent caching, error handling, and accessibility features.
+This web part provides a comprehensive solution for viewing and interacting with site members across different SharePoint environments. Built with modern React patterns and Microsoft Graph integration, it automatically detects whether you're on a Microsoft 365 group-connected site or a Communication site and shows all users with appropriate access levels.
 
 ### Key Features
 
-- **Microsoft Graph Integration**: Real-time data from Microsoft 365 groups
+- **Unified Site Member Discovery**: Works with both M365 Groups and Communication sites
+- **Smart Access Level Detection**: Automatically identifies Owners, Administrators, Members, and Visitors
+- **Microsoft Graph Integration**: Real-time data from Microsoft 365 and SharePoint APIs
 - **Smart Profile Images**: Automated fallback with initials, intelligent caching
 - **Advanced Search**: Debounced search across multiple user properties
-- **Role-based Filtering**: Administrators, Members, and Visitors
+- **Role-based Filtering**: Owners, Administrators, Members, and Visitors
 - **Interactive Actions**: Direct Teams chat and email integration
+- **Customizable Title**: SharePoint native title editing with inline editing support
 - **Responsive Design**: Optimized for desktop and mobile experiences
 - **Accessibility**: Full screen reader and keyboard navigation support
 
 ## Features
 
-- **Microsoft Graph Integration**: Fetches user details from Microsoft 365 groups
+- **Intelligent Site Detection**: Automatically detects M365 Groups vs Communication sites
+- **Unified Member Access**: 
+  - M365 Group members (owners, admins, members)
+  - SharePoint site permissions (contribute, read, full control)
+  - Unified access level mapping (owner/admin/member/visitor)
 - **Custom Profile Image Handling**: 
   - Graceful fallback for profile photos
   - Lazy loading of images
   - Initials-based avatar generation
 - **Flexible Configuration**: 
-  - Configurable roles
+  - Configurable roles (Owner, Admin, Member, Visitor)
   - Customizable labels
   - Pagination settings
 - **Enhanced User Experience**:
   - Search functionality
   - Quick action buttons
+  - Customizable web part title (inline editing)
   - Responsive design
 
 ## Web Part Properties
 
 | Property | Type | Description | Default | Required |
 |----------|------|-------------|---------|----------|
-| `roles` | Array of Strings | Roles to display (admin, member, visitor) | None | Yes |
+| `title` | String | Custom title for the web part | 'Site Members' | No |
+| `roles` | Array of Strings | Roles to display (owner, admin, member, visitor) | None | Yes |
 | `itemsPerPage` | Number | Number of users per page | 10 | No |
 | `sortField` | String | Sort users by 'name' or 'jobTitle' | 'name' | No |
 | `showSearchBox` | Boolean | Enable/disable search functionality | true | No |
 | `showPresenceIndicator` | Boolean | Show Microsoft Teams presence status | true | No |
+| `ownerLabel` | String | Custom label for owners | 'Owners' | No |
 | `adminLabel` | String | Custom label for administrators | 'Administrators' | No |
 | `memberLabel` | String | Custom label for members | 'Members' | No |
 | `visitorLabel` | String | Custom label for visitors | 'Visitors' | No |
@@ -72,11 +82,12 @@ This web part provides a comprehensive solution for viewing and interacting with
 ```typescript
 // Web part configuration example
 {
-  roles: ['admin', 'member'],
+  roles: ['owner', 'admin', 'member'],
   itemsPerPage: 15,
   sortField: 'jobTitle',
   showSearchBox: true,
-  adminLabel: 'Leadership Team'
+  ownerLabel: 'Site Owners',
+  adminLabel: 'Administrators'
 }
 ```
 
@@ -93,6 +104,8 @@ The following Microsoft Graph API permissions are required for full functionalit
 | `Group.Read.All` | Read Microsoft 365 group details | Application |
 | `GroupMember.Read.All` | Read group membership information | Application |
 | `Presence.Read.All` | Read user presence status in Microsoft Teams | Application |
+| `Sites.Read.All` | Read SharePoint site information and permissions | Application |
+| `Sites.ReadWrite.All` | Read and write SharePoint site permissions | Application |
 
 ### Permission Request Process
 
