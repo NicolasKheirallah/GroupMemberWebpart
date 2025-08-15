@@ -198,7 +198,7 @@ const EnhancedGroupMembers: React.FC<IGroupMembersProps> = (props): JSX.Element 
               <List
                 items={users}
                 onRenderCell={(user: IUser | undefined): JSX.Element | null => {
-                  if (!user) return null;
+                  if (!user || !user.displayName || !user.id) return null;
                   return (
                     <ErrorBoundary context={`UserListItem-${user.id}`} level="component">
                       <div className={styles.listItem}>

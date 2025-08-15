@@ -129,17 +129,26 @@ export class StateManager implements IStateManager {
           }
         };
 
-      case 'USERS_LOADING_SUCCESS':
+      case 'USERS_LOADING_SUCCESS': {
+        // Filter out invalid users before storing in state
+        const filteredUsersByRole: IUsersByRole = {
+          owner: (action.payload.owner || []).filter(user => user && user.id && user.displayName && user.displayName.trim() !== ''),
+          admin: (action.payload.admin || []).filter(user => user && user.id && user.displayName && user.displayName.trim() !== ''),
+          member: (action.payload.member || []).filter(user => user && user.id && user.displayName && user.displayName.trim() !== ''),
+          visitor: (action.payload.visitor || []).filter(user => user && user.id && user.displayName && user.displayName.trim() !== '')
+        };
+        
         return {
           ...state,
           users: {
             ...state.users,
-            usersByRole: action.payload,
+            usersByRole: filteredUsersByRole,
             loading: false,
             error: undefined,
             lastFetchTime: Date.now()
           }
         };
+      }
 
       case 'USERS_LOADING_ERROR':
         return {

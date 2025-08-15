@@ -89,13 +89,16 @@ const UnifiedProfileImage: React.FC<UnifiedProfileImageProps> = ({
     setState(prev => ({ ...prev, isLoading: true, hasError: false }));
 
     try {
-      // Load photo and presence in parallel
+      // Load photo and optionally presence in parallel
       const promises: Promise<unknown>[] = [
         graphService.getUserPhoto(userId)
       ];
 
       if (showPresence) {
         promises.push(graphService.getUserPresence(userId));
+      } else {
+        // Don't load presence data when disabled
+        promises.push(Promise.resolve(null));
       }
 
       // Manual Promise.allSettled equivalent for older TypeScript targets
