@@ -67,6 +67,17 @@ const UnifiedProfileImage: React.FC<UnifiedProfileImageProps> = ({
 
   // Load photo and presence data
   const loadUserData = useCallback(async () => {
+    // Guard against undefined userId
+    if (!userId || userId.trim() === '') {
+      setState({
+        src: undefined,
+        hasError: true,
+        isLoading: false,
+        presence: undefined
+      });
+      return;
+    }
+    
     // Cancel any existing requests
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -165,10 +176,8 @@ const UnifiedProfileImage: React.FC<UnifiedProfileImageProps> = ({
     width: `${size}px`,
     height: `${size}px`,
     position: 'relative' as const,
-    display: 'inline-block' as const,
-    // Add padding to prevent presence indicator from being cut off
-    padding: showPresence ? `${Math.max(2, presenceSize / 4)}px` : '0px'
-  }), [size, showPresence, presenceSize]);
+    display: 'inline-block' as const
+  }), [size]);
 
   const imageContainerStyles = useMemo(() => ({
     width: `${size}px`,
@@ -185,8 +194,8 @@ const UnifiedProfileImage: React.FC<UnifiedProfileImageProps> = ({
     border: '2px solid white',
     borderRadius: '50%',
     position: 'absolute' as const,
-    bottom: `-${presenceSize / 4}px`,
-    right: `-${presenceSize / 4}px`,
+    bottom: '0px',
+    right: '0px',
     zIndex: 2,
     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.2)'
   }), [presenceSize, state.presence?.color]);

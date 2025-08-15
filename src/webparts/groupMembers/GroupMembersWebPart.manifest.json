@@ -28,7 +28,7 @@
       "showMembers": true,
       "showVisitors": false,
       "showSearchBox": true,
-      "showPresenceIndicator": true,
+      "showPresenceIndicator": false,
       "itemsPerPage": 10,
       "sortField": "name"
     }

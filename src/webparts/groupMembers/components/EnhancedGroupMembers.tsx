@@ -55,6 +55,12 @@ interface UserPersonaWithServiceProps extends UserPersonaProps {
 
 const UserPersona: React.FC<UserPersonaWithServiceProps> = React.memo(({ user, presenceEnabled }) => {
   const graphService = useUnifiedGraphService();
+  
+  // Guard against invalid user data
+  if (!user || !user.displayName || !user.id) {
+    return null;
+  }
+  
   const fallbackInitials = getFallbackInitials(user.displayName);
 
   return (

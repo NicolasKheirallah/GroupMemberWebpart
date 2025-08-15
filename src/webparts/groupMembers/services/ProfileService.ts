@@ -37,10 +37,15 @@ export class ProfileService implements IProfileService {
   }
 
   public async getUserPhoto(userId: string): Promise<string | undefined> {
+    // Guard against invalid userId
+    if (!userId || userId.trim() === '' || userId === 'undefined') {
+      return undefined;
+    }
+    
     // Check LRU cache first
     const cachedPhoto = this.cacheService.getUserPhoto(userId);
     if (cachedPhoto) {
-      return cachedPhoto;
+      return cachedPhoto === 'NO_PHOTO' ? undefined : cachedPhoto;
     }
 
     try {
@@ -91,6 +96,11 @@ export class ProfileService implements IProfileService {
   }
 
   public async getUserPresence(userId: string): Promise<IUserPresence | undefined> {
+    // Guard against invalid userId
+    if (!userId || userId.trim() === '' || userId === 'undefined') {
+      return undefined;
+    }
+    
     // Check cache first (5-minute TTL for presence)
     const cachedPresence = this.cacheService.getUserPresence(userId);
     if (cachedPresence) {

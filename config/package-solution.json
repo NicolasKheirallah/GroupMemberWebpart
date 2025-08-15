@@ -3,7 +3,7 @@
   "solution": {
     "name": "group-members-web-part-client-side-solution",
     "id": "7cdc593f-2944-47b9-88b3-3c30dd7faf42",
-    "version": "2.0.0.0",
+    "version": "3.0.0.0",
     "includeClientSideAssets": true,
     "skipFeatureDeployment": true,
     "isDomainIsolated": false,

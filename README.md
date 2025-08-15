@@ -123,7 +123,6 @@ The following Microsoft Graph API permissions are required for full functionalit
 ## Known Limitations
 
 - Performance may vary with large group memberships
-- Requires active internet connection for Microsoft Graph queries
 - Profile photo retrieval depends on user's Microsoft 365 profile
 
 ## Troubleshooting

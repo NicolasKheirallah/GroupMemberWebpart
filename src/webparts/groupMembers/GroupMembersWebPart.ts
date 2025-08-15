@@ -54,7 +54,7 @@ export default class GroupMembersWebPart extends BaseClientSideWebPart<IGroupMem
       this.properties.title = 'Site Members';
     }
     if (this.properties.showPresenceIndicator === undefined) {
-      this.properties.showPresenceIndicator = true;
+      this.properties.showPresenceIndicator = false;
     }
     if (this.properties.showSearchBox === undefined) {
       this.properties.showSearchBox = true;
